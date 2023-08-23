@@ -5,8 +5,9 @@ import {
     Model,
     Table,
 } from 'sequelize-typescript';
-import { User } from 'src/user/user.model';
 import { UserRoles } from './user-roles.model';
+import { User } from '@user/models';
+import { v4 } from 'uuid';
 
 interface RolesCreationAttrs {
     roleName: string;
@@ -16,13 +17,13 @@ interface RolesCreationAttrs {
 @Table({ tableName: 'roles' })
 export class Roles extends Model<Roles, RolesCreationAttrs> {
     @Column({
-        type: DataType.INTEGER,
-        autoIncrement: true,
+        type: DataType.STRING,
+        defaultValue: () => v4(),
         primaryKey: true,
     })
-    id: number; 
+    id: string;
 
-    @Column({ 
+    @Column({
         type: DataType.STRING,
         allowNull: false,
         unique: true,

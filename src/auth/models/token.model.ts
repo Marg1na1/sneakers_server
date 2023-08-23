@@ -1,3 +1,4 @@
+import { User } from '@user/models';
 import {
     BelongsTo,
     Column,
@@ -6,7 +7,7 @@ import {
     Model,
     Table,
 } from 'sequelize-typescript';
-import { User } from 'src/user/user.model';
+import { v4 } from 'uuid'
 
 interface TokenReationAttr {
     userId: string;
@@ -17,12 +18,11 @@ interface TokenReationAttr {
 
 @Table({ tableName: 'tokens' })
 export class Token extends Model<Token, TokenReationAttr> {
-    //TODO везде айдишники сделать uuid 
     @Column({
-        type: DataType.INTEGER,
-        autoIncrement: true,
+        type: DataType.STRING,
+        defaultValue: () => v4()
     })
-    id: number;
+    id: string;
 
     @Column({
         type: DataType.STRING,
@@ -39,7 +39,7 @@ export class Token extends Model<Token, TokenReationAttr> {
 
     @ForeignKey(() => User)
     @Column({
-        type: DataType.STRING, 
+        type: DataType.STRING,
     })
     userId: string;
 

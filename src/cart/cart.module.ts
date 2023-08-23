@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CartController } from './cart.controller';
 import { CartService } from './cart.service';
-import { UserModule } from 'src/user/user.module';
-import { ProductsModule } from 'src/products/products.module';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UserCart } from './models/user-cart.model';
+import { UserCart } from './models'
+import { UserModule } from '@user/user.module'
+import { ProductsModule } from '@products/products.module'
 
 @Module({
     controllers: [CartController],

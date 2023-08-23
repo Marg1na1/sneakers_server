@@ -9,12 +9,10 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { BanUserDto } from './dto/ban-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { AddRoleDto } from './dto/add-role.dto';
-import { CurrentUser, Public, Roles } from '@shared/decorators';
-import { JwtPayload } from 'src/auth/interfaces';
-import { RolesAuthGuard } from 'src/auth/guards';
+import { CurrentUser, Roles } from '@shared/decorators';
+import { JwtPayload } from '@auth/interfaces'
+import { RolesAuthGuard } from '@auth/guards'
+import { AddRoleDto, BanUserDto, UpdateUserDto } from './dto'
 
 @Controller('user')
 export class UserController {
@@ -24,8 +22,6 @@ export class UserController {
         return this.UserService.deleteUser(id, user);
     }
     //TODO сделать так чтобы пользователь мог получать себя, а админ кого угодно
-    // @Roles('ADMIN')
-    // @UseGuards(RolesAuthGuard)
     @Get('/:idOrEmail')
     getOne(
         @Param('idOrEmail') idOrEmail: string,
@@ -35,9 +31,8 @@ export class UserController {
         return this.UserService.getOneUser(idOrEmail);
     }
 
-    // @Roles('ADMIN')
-    // @UseGuards(RolesAuthGuard)
-    @Public()
+    @Roles('ADMIN')
+    @UseGuards(RolesAuthGuard)
     @Get()
     getAll() {
         return this.UserService.getAllUsers();
@@ -70,6 +65,6 @@ export class UserController {
         @Param('id') id: string,
         @CurrentUser() user: JwtPayload
     ) {
-        return this.UserService.updateUser(dto, id, user);
+        return this.UserService.updateUser(dto, id, user.id);
     }
 }

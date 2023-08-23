@@ -1,8 +1,8 @@
 import { CartService } from './cart.service';
 import { Controller, Post, Delete, Param, Body, Patch } from '@nestjs/common';
 import { CurrentUser } from '@shared/decorators';
-import { JwtPayload } from 'src/auth/interfaces';
 import { UpdateProductInCartDto } from './dto';
+import { JwtPayload } from '@auth/interfaces'
 
 @Controller('cart')
 export class CartController {

@@ -16,7 +16,5 @@ export class CreateUserWithPassDto {
 
     readonly userName?: string;
 
-    readonly avatar?: string;
-
     readonly role: string;
 }

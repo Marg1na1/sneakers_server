@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { User } from './user.model';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { RolesModule } from 'src/roles/roles.module';
-import { UserRoles } from 'src/roles/models/user-roles.model';
-import { Roles } from 'src/roles/models/roles.model';
-import { AuthModule } from 'src/auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { User } from './models';
+import { RolesModule } from '@roles/roles.module';
+import { Roles, UserRoles } from '@roles/models';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
     controllers: [UserController],

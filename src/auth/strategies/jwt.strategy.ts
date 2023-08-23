@@ -1,8 +1,8 @@
-import { UserService } from './../../user/user.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../interfaces';
+import { UserService } from '@user/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,10 +18,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const user = await this.userService.getOneUser(payload.id);
         if (!user) {
             throw new UnauthorizedException();
+        } else if (!user.banned) {
+            throw new UnauthorizedException('this user is banned');
         }
-        // else if (!user.banned) {
-        //     throw new UnauthorizedException('this user is banned');
-        // }
         return payload;
     }
 }

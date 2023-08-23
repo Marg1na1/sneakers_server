@@ -23,7 +23,41 @@
       ],
       "@shared/*": [
         "libs/shared/src/*"
-      ]
+      ],
+       "@models/*": [
+        "./models"
+      ],
+      "@roles/*": [
+        "src/roles/*"
+      ],
+      "@auth/*": [
+        "src/auth/*"
+      ],
+      "@user/*": [
+        "src/user/*"
+      ],
+      "@products/*": [
+        "src/products/*"
+      ],
+      "@cart/*": [
+        "src/cart/*"
+      ],
+      "@orders/*": [
+        "src/orders/*"
+      ],
+      "@address/*": [
+        "src/address/*"
+      ],
+      "@files/*": [
+        "src/files/*"
+      ],
+      "@mail/*": [
+        "src/mail/*"
+      ],
+      "@enum": [
+        "src/enums"
+      ],
+      
     }
   }
 }

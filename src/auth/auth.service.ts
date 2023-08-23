@@ -1,35 +1,30 @@
-import { Providers } from './../user/interfaces';
 import {
     BadRequestException,
     ConflictException,
     Injectable,
-    Logger,
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
-import { MailService } from 'src/mail/mail.service';
-import { User } from 'src/user/user.model';
-import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto';
 import { compareSync } from 'bcrypt';
 import { v4 } from 'uuid';
 import { add } from 'date-fns';
 import { Token } from './interfaces';
-import { Token as TokenModel } from './models/token.model';
-import { CreateUserWithPassDto } from 'src/user/dto';
-import { FilesService } from 'src/files/files.service';
+import { Token as TokenModel } from './models';
+import { FilesService } from '@files/files.service';
+import { UserService } from '@user/user.service';
+import { CreateUserWithPassDto } from '@user/dto';
+import { User } from '@user/models';
+import { PhotoTypes, Providers } from '@enum';
 
 @Injectable()
 export class AuthService {
-    private readonly logger = new Logger(AuthService.name);
     constructor(
-        @InjectModel(User) private userRepository: typeof User,
         @InjectModel(TokenModel) private tokenRepository: typeof TokenModel,
         private readonly fileService: FilesService,
         private readonly userService: UserService,
-        private readonly mailService: MailService,
         private readonly jwtService: JwtService
     ) {}
 
@@ -52,7 +47,7 @@ export class AuthService {
             throw new NotFoundException();
         }
 
-        const tokens = await this.generateTokens(user, agent);
+        const tokens = this.generateTokens(user, agent);
 
         await this.tokenRepository.create(tokens.refreshToken);
 
@@ -69,9 +64,10 @@ export class AuthService {
         if (userExist) {
             throw new ConflictException('user with this email already exists');
         }
-        // await this.fileService.create(file);
 
         const user = await this.userService.createUser(dto);
+
+        await this.fileService.create(file, user.id, PhotoTypes.AVATARS);
 
         const tokens = this.generateTokens(user, agent);
 
@@ -99,7 +95,7 @@ export class AuthService {
 
             return tokens;
         } else {
-            const tokens = await this.generateTokens(user, agent);
+            const tokens = this.generateTokens(user, agent);
 
             await this.tokenRepository.create(tokens.refreshToken);
 

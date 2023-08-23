@@ -1,3 +1,5 @@
+import { Product } from '@products/models'
+import { User } from '@user/models'
 import {
     Column,
     DataType,
@@ -5,8 +7,6 @@ import {
     Model,
     Table,
 } from 'sequelize-typescript';
-import { Product } from 'src/products/models';
-import { User } from 'src/user/user.model';
 import { v4 } from 'uuid';
 
 @Table({ tableName: 'user_carts', createdAt: false, updatedAt: false })

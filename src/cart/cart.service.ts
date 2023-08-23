@@ -1,15 +1,13 @@
-import { Product } from 'src/products/models/product.model';
 import {
     BadRequestException,
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { UserCart } from './models/user-cart.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { AddToCartDto } from './dto/add-to-cart.dto';
-import { UserService } from 'src/user/user.service';
-import { ProductsService } from 'src/products/products.service';
-import { UpdateProductInCartDto } from './dto';
+import { AddToCartDto, UpdateProductInCartDto } from './dto';
+import { UserService } from '@user/user.service'
+import { ProductsService } from '@products/products.service'
+import { UserCart } from './models'
 
 @Injectable()
 export class CartService {
@@ -30,10 +28,11 @@ export class CartService {
         }
 
         product.count--;
+        
         if (!product.count) {
             product.isHide = true;
         }
-        await this.productsService.update(product);
+        await this.productsService.update(product, user.id);
 
         if (user.cart.length) {
             await user.$add('cart', product.id);
@@ -55,7 +54,7 @@ export class CartService {
         if (product.isHide && product.count) {
             product.isHide = false;
         }
-        await this.productsService.update(product);
+        await this.productsService.update(product, user.id);
         await user.$remove('cart', dto.productId);
         return dto;
     }
@@ -69,7 +68,6 @@ export class CartService {
         const currProductIndex = user.cart.findIndex(
             (obj) => obj.id === dto.userId
         );
-        console.log(user.cart);
         user.cart[currProductIndex].count = dto.count;
 
         user.save();

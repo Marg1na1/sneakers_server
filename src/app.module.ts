@@ -1,26 +1,26 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { ProductsModule } from './products/products.module';
-import { CartModule } from './cart/cart.module';
-import { OrdersModule } from './orders/orders.module';
-import { RolesModule } from './roles/roles.module';
-import { AddressModule } from './address/address.module';
-import { FilesModule } from './files/files.module';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './user/user.model';
 import { ConfigModule } from '@nestjs/config';
-import { Roles } from './roles/models/roles.model';
-import { UserRoles } from './roles/models/user-roles.model';
-import { MailModule } from './mail/mail.module';
-import { Token } from './auth/models/token.model';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { Product } from './products/models/product.model';
-import { UserCart } from './cart/models/user-cart.model';
-import { ImageFile } from './files/models/image.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
+import { UserModule } from '@user/user.module';
+import { AuthModule } from '@auth/auth.module';
+import { User } from '@user/models';
+import { Roles, UserRoles } from '@roles/models';
+import { Token } from '@auth/models';
+import { Product } from '@products/models';
+import { UserCart } from '@cart/models';
+import { ImageFile } from '@files/models';
+import { ProductsModule } from '@products/products.module';
+import { CartModule } from '@cart/cart.module';
+import { AddressModule } from '@address/address.module';
+import { OrdersModule } from '@orders/orders.module';
+import { RolesModule } from '@roles/roles.module';
+import { FilesModule } from '@files/files.module';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { ProductPhoto } from '@products/models/product-photo.model';
+import { MailModule } from '@mail/mail.module'
 
 @Module({
     imports: [
@@ -36,7 +36,7 @@ import { join, resolve } from 'path';
             host: process.env.POSTGRES_HOST,
             port: +!process.env.POSTGRES_PORT,
             username: process.env.POSTGRES_USER,
-            password: process.env.POSTGRES_PASSWORD,
+            password: `${process.env.POSTGRES_PASSWORD}`,
             database: process.env.POSTGRES_NAME,
             models: [
                 User,
@@ -46,6 +46,7 @@ import { join, resolve } from 'path';
                 Product,
                 UserCart,
                 ImageFile,
+                ProductPhoto,
             ],
             autoLoadModels: true,
             logging: true,

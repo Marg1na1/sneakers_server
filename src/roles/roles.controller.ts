@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreteRolesDto } from './dto/create-roles.dto';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { RolesService } from './roles.service';
-import { Public } from '@shared/decorators'
+import { Roles } from '@shared/decorators';
+import { CreteRolesDto } from './dto'
+import { RolesAuthGuard } from '@auth/guards'
 
 @Controller('roles')
 export class RolesController {
     constructor(private roleService: RolesService) {}
 
-    @Public()
+    @Roles('ADMIN')
+    @UseGuards(RolesAuthGuard)
     @Post()
     create(@Body() dto: CreteRolesDto) {
         return this.roleService.createRole(dto);

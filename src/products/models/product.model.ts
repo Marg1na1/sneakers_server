@@ -4,12 +4,14 @@ import {
     Column,
     DataType,
     ForeignKey,
+    HasMany,
     Model,
     Table,
 } from 'sequelize-typescript';
-import { UserCart } from 'src/cart/models/user-cart.model';
-import { User } from 'src/user/user.model';
 import { v4 } from 'uuid';
+import { ProductPhoto } from './product-photo.model';
+import { User } from '@user/models'
+import { UserCart } from '@cart/models'
 
 interface ProductCreationAttrs {
     title: string;
@@ -37,9 +39,6 @@ export class Product extends Model<Product, ProductCreationAttrs> {
 
     @Column({ type: DataType.INTEGER, allowNull: false })
     price: number;
-    //TODO defaultValue нужно какую нибудь заглушку
-    @Column({ type: DataType.STRING })
-    photo: string;
 
     @Column({ type: DataType.BOOLEAN, defaultValue: false })
     isHide: boolean;
@@ -50,6 +49,9 @@ export class Product extends Model<Product, ProductCreationAttrs> {
     @ForeignKey(() => User)
     @Column({ type: DataType.STRING })
     sellerId: string;
+
+    @HasMany(() => ProductPhoto)
+    photos: ProductPhoto[];
 
     @BelongsTo(() => User)
     user: User;

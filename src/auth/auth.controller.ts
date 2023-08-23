@@ -4,8 +4,6 @@ import {
     Controller,
     Get,
     HttpStatus,
-    MaxFileSizeValidator,
-    ParseFilePipe,
     Post,
     Query,
     Req,
@@ -22,14 +20,13 @@ import { ConfigService } from '@nestjs/config';
 import { Tokens } from './interfaces';
 import { Cookies, Public } from '@shared/decorators';
 import { UserAgent } from '@shared/decorators/user-agent.decorator';
-import { GoogleGuard } from './guards/google.guard';
 import { HttpService } from '@nestjs/axios';
-import { map, mergeMap, tap } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
 import { handleTimeoutAndErrors } from '@shared/helpers';
-import { Providers } from 'src/user/interfaces';
-import { CreateUserWithPassDto } from 'src/user/dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { fileStorage } from 'src/files/storage';
+import { Providers } from '@enum'
+import { GoogleGuard } from './guards/google.guard'
+import { CreateUserWithPassDto } from '@user/dto'
 
 const REFRESH_TOKEN = 'refershtoken';
 
@@ -43,23 +40,12 @@ export class AuthController {
     ) {}
 
     @Post('/register')
-    @UseInterceptors(
-        FileInterceptor('file', {
-            storage: fileStorage,
-        })
-    )
+    @UseInterceptors(FileInterceptor('image'))
     async register(
         @Body() dto: CreateUserWithPassDto,
         @UserAgent() agent: string,
         @Res() res: Response,
-        @UploadedFile(
-            new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 }),
-                ],
-            })
-        )
-        file: Express.Multer.File
+        @UploadedFile() file: Express.Multer.File
     ) {
         const tokens = await this.authService.registration(dto, agent, file);
         if (!tokens) {

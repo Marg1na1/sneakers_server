@@ -6,10 +6,10 @@ import {
     Table,
 } from 'sequelize-typescript';
 import { Roles } from './roles.model';
-import { User } from 'src/user/user.model';
 import { v4 } from 'uuid';
+import { User } from '@user/models'
 
-@Table({ tableName: 'userRoles', createdAt: false, updatedAt: false })
+@Table({ tableName: 'user_roles', createdAt: false, updatedAt: false })
 export class UserRoles extends Model<UserRoles> {
     @Column({
         type: DataType.UUID,

@@ -1,5 +1,4 @@
 import {
-    BelongsTo,
     BelongsToMany,
     Column,
     DataType,
@@ -7,13 +6,12 @@ import {
     Model,
     Table,
 } from 'sequelize-typescript';
-import { Token } from 'src/auth/models/token.model';
-import { Roles } from 'src/roles/models/roles.model';
-import { UserRoles } from 'src/roles/models/user-roles.model';
 import { v4 } from 'uuid';
-import { Providers } from './interfaces';
-import { Product } from 'src/products/models/product.model';
-import { UserCart } from 'src/cart/models/user-cart.model';
+import { Providers } from '@enum'
+import { Product } from '@products/models'
+import { Roles, UserRoles } from '@roles/models'
+import { UserCart } from '@cart/models'
+import { Token } from '@auth/models'
 
 interface UserReationAttr {
     email: string;
@@ -39,7 +37,6 @@ export class User extends Model<User, UserReationAttr> {
     @Column({ type: DataType.STRING, unique: true, allowNull: true })
     userName: string;
 
-    //TODO defaultValue
     @Column({ type: DataType.STRING })
     avatar: string;
 
@@ -60,7 +57,7 @@ export class User extends Model<User, UserReationAttr> {
 
     @BelongsToMany(() => Product, () => UserCart)
     cart: Product[];
-
+ 
     @HasMany(() => Token)
     tokens: Token[];
-}
+} 

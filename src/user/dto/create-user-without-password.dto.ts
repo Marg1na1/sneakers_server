@@ -1,14 +1,13 @@
-import { IsPasswordsMatching } from '@shared/decorators';
-import { IsEmail, IsString, MinLength, Validate } from 'class-validator';
-import { Roles } from 'src/roles/models/roles.model';
+import { Providers } from '@enum'
+import { IsEmail } from 'class-validator';
+
 export class CreateUserWithoutPassDto {
     @IsEmail()
     readonly email: string;
 
-    readonly provider: string;
+    readonly provider: Providers;
 
     readonly userName?: string;
 
     readonly avatar?: string;
-
 }

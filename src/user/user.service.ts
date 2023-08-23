@@ -6,21 +6,24 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
+import {
+    AddRoleDto,
+    BanUserDto,
+    CreateUserWithPassDto,
+    CreateUserWithoutPassDto,
+    UpdateUserDto,
+} from './dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from './user.model';
-import { BanUserDto } from './dto/ban-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RolesService } from 'src/roles/roles.service';
-import { AddRoleDto } from './dto/add-role.dto';
 import { compareSync, genSaltSync, hashSync } from 'bcrypt';
-import { JwtPayload } from 'src/auth/interfaces';
-import { UserRoles } from 'src/roles/models/user-roles.model';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { convertToSecondsUtil } from '@shared/utils';
 import { Op } from 'sequelize';
 import { v4 } from 'uuid';
-import { CreateUserWithPassDto, CreateUserWithoutPassDto } from './dto';
+import { User } from './models';
+import { UserRoles } from '@roles/models'
+import { RolesService } from '@roles/roles.service'
+import { JwtPayload } from '@auth/interfaces'
 
 @Injectable()
 export class UserService {
@@ -43,10 +46,10 @@ export class UserService {
         const currentRole = await this.userRolesRepository.findOne({
             where: { userId: user.id, roleId: 2 },
         });
-        if (+user.id !== +id && !currentRole) {
+        if (user.id !== id && !currentRole) {
             throw new ForbiddenException();
         }
-        //удаляем из кеша по id и по email
+
         await Promise.all([
             this.cacheManager.del(id),
             this.cacheManager.del(user.email),
@@ -63,8 +66,9 @@ export class UserService {
         if (isReset) {
             await this.cacheManager.del(search);
         }
-        const user = await this.cacheManager.get<User>(search);
-        if (!user) {
+        const currentUser = await this.cacheManager.get<User>(search);
+
+        if (!currentUser) {
             const user = await this.userRepository.findOne({
                 where: {
                     [Op.or]: [
@@ -85,7 +89,7 @@ export class UserService {
             );
             return user;
         }
-        return user;
+        return currentUser;
     }
 
     async getAllUsers() {
@@ -131,12 +135,12 @@ export class UserService {
         throw new NotFoundException('user is not found');
     }
 
-    async updateUser(dto: UpdateUserDto, id: string, curUser: JwtPayload) {
+    async updateUser(dto: UpdateUserDto, id: string, curId: string) {
         const currentRole = await this.userRolesRepository.findOne({
-            where: { userId: curUser.id, roleId: 2 },
+            where: { userId: curId, roleId: 2 },
         });
 
-        if (curUser.id !== id && !currentRole) {
+        if (curId !== id && !currentRole) {
             throw new UnauthorizedException();
         }
 
@@ -150,6 +154,7 @@ export class UserService {
                     userName: dto.updatedUserName || user.userName,
                 });
                 await user.save();
+                console.log(user);
                 return user;
             }
             throw new UnauthorizedException();
@@ -167,7 +172,7 @@ export class UserService {
             email: dto.email,
             password: hashPassword,
             userName: dto.userName || 'user ' + v4(),
-            //TODO сделать обрабоку и генерацию ника и аватара
+            //TODO сделать дефолтную аву
         });
 
         const role = await this.rolesService.getRoleByName(dto.role || 'USER');
@@ -185,7 +190,7 @@ export class UserService {
         const user = await this.userRepository.create({
             email: dto.email,
             userName: dto.userName || 'user ' + v4(),
-            //TODO сделать обрабоку и генерацию ника и аватара
+            //TODO сделать дефолтную аву
         });
 
         const role = await this.rolesService.getRoleByName('USER');
